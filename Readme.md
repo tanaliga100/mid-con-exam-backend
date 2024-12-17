@@ -1,5 +1,9 @@
 # Backend Exam - Nodejs
 
+##### - I technically included the .env file in the repo so it can be edited for testing
+
+##### - cloned the repo and install everything bago i-run.
+
 ### --- table of contents ---
 
 # spinning up the core-modules:
