@@ -1,5 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const tasksController = require("../controllers/task.controllers");
+
+// Define routes
+router.get("/", tasksController.getAllTasks);
+router.post("/", tasksController.createTask);
+router.get("/:id", tasksController.getTaskById);
+router.put("/:id", tasksController.updateTask);
+router.delete("/:id", tasksController.deleteTask);
+
+module.exports = router;
 
 // ...MODE ONE...
 // router.get("/", function (req, res) {
@@ -19,26 +29,26 @@ const router = express.Router();
 // });
 
 // ...MODE TWO...
-router
-  .route("/")
-  .get((req, res) => {
-    // Handle GET request to root
-  })
-  .post((req, res) => {
-    // Handle POST request to root
-  });
+// router
+//   .route("/")
+//   .get((req, res) => {
+//     // Handle GET request to root
+//   })
+//   .post((req, res) => {
+//     // Handle POST request to root
+//   });
 
-router
-  .route("/:id")
-  .get((req, res) => {
-    // Handle GET request for resource with ID
-  })
-  .patch((req, res) => {
-    // Handle PATCH request for resource with ID
-  })
-  .delete((req, res) => {
-    // Handle DELETE request for resource with ID
-  });
+// router
+//   .route("/:id")
+//   .get((req, res) => {
+//     // Handle GET request for resource with ID
+//   })
+//   .patch((req, res) => {
+//     // Handle PATCH request for resource with ID
+//   })
+//   .delete((req, res) => {
+//     // Handle DELETE request for resource with ID
+//   });
 
-// Export the router
-module.exports = router;
+// // Export the router
+// module.exports = router;

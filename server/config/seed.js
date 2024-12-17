@@ -36,21 +36,43 @@ const tasks = [
 // Function to seed the data
 exports.seedDatabase = async () => {
   try {
-    // Insert sample data into the 'tasks' table
-    for (let task of tasks) {
-      const query = `
-        INSERT INTO tasks (title, description, status)
-        VALUES (?, ?, ?)
-      `;
-      await promisePool.query(query, [
-        task.title,
-        task.description,
-        task.status,
-      ]);
-    }
+    // Check if there are any tasks in the table
+    const [rows] = await promisePool.query(
+      "SELECT COUNT(*) AS count FROM tasks"
+    );
+    if (rows[0].count === 0) {
+      for (let task of tasks) {
+        const query = `
+          INSERT INTO tasks (title, description, status)
+          VALUES (?, ?, ?)
+        `;
+        await promisePool.query(query, [
+          task.title,
+          task.description,
+          task.status,
+        ]);
+      }
 
+      console.log("Database seeded successfully!");
+    } else {
+      console.log("Data already exists. Skipping seed.");
+    }
     console.log("\x1b[33m%s\x1b[0m", "Database seeded successfully.....");
   } catch (error) {
     console.error("Error seeding the database:", error);
+  }
+};
+
+exports.deleteAllTasks = async () => {
+  try {
+    const query = "DELETE FROM tasks";
+    await promisePool.query(query);
+    console.log("All tasks deleted.");
+
+    // Reset the AUTO_INCREMENT to 1
+    await promisePool.query("ALTER TABLE tasks AUTO_INCREMENT = 1");
+    console.log("AUTO_INCREMENT reset to 1.");
+  } catch (error) {
+    console.error("Error deleting tasks or resetting AUTO_INCREMENT:", error);
   }
 };

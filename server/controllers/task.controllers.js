@@ -1,75 +1,81 @@
-let DATA_STORE = []; // Replace with your database logic
+const tasksService = require("../services/task.services");
 
-// GET all items
-exports.GET_ALL_ITEMS = async (req, res) => {
+const getAllTasks = async (req, res) => {
   try {
-    const items = await fetchItemsFromDatabase(); // Replace with your DB fetch logic
-    res.status(200).json(items);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching items", error });
+    const tasks = await tasksService.getAllTasks();
+    res.status(200).json(tasks);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching tasks", error: err.message });
   }
 };
 
-// CREATE a new item
-exports.CREATE_ITEM = async (req, res) => {
-  const NEW_ITEM = {
-    ID: DATA_STORE.length + 1, // Simple ID generation logic; replace as needed
-    ...req.body,
-  };
+const createTask = async (req, res) => {
+  const { title, description } = req.body;
   try {
-    await saveItemToDatabase(NEW_ITEM); // Replace with your DB save logic
-    DATA_STORE.push(NEW_ITEM);
-    res.status(201).json(NEW_ITEM);
-  } catch (error) {
-    res.status(400).json({ message: "Error creating item", error });
+    const newTask = await tasksService.createTask({ title, description });
+    res.status(201).json(newTask);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error creating task", error: err.message });
   }
 };
 
-// READ an item by ID
-exports.GET_ITEM_BY_ID = async (req, res) => {
-  const ITEM = DATA_STORE.find((item) => item.ID === parseInt(req.params.id));
+const getTaskById = async (req, res) => {
+  const { id } = req.params;
   try {
-    if (!ITEM) {
-      return res.status(404).json({ message: "Item not found" });
+    const task = await tasksService.getTaskById(id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
     }
-    res.status(200).json(ITEM);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching item", error });
+    res.status(200).json(task);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error fetching task", error: err.message });
   }
 };
 
-// UPDATE an item by ID
-exports.UPDATE_ITEM = async (req, res) => {
-  const ITEM_INDEX = DATA_STORE.findIndex(
-    (item) => item.ID === parseInt(req.params.id)
-  );
-  if (ITEM_INDEX === -1) {
-    return res.status(404).json({ message: "Item not found" });
-  }
-  const UPDATED_ITEM = {
-    ...DATA_STORE[ITEM_INDEX],
-    ...req.body,
-  };
+const updateTask = async (req, res) => {
+  const { id } = req.params;
+  const { title, description } = req.body;
   try {
-    DATA_STORE[ITEM_INDEX] = UPDATED_ITEM; // Update in memory, replace with DB update logic
-    res.status(200).json(UPDATED_ITEM);
-  } catch (error) {
-    res.status(400).json({ message: "Error updating item", error });
+    const updatedTask = await tasksService.updateTask(id, {
+      title,
+      description,
+    });
+    if (!updatedTask) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+    res.status(200).json(updatedTask);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error updating task", error: err.message });
   }
 };
 
-// DELETE an item by ID
-exports.DELETE_ITEM = async (req, res) => {
-  const ITEM_INDEX = DATA_STORE.findIndex(
-    (item) => item.ID === parseInt(req.params.id)
-  );
-  if (ITEM_INDEX === -1) {
-    return res.status(404).json({ message: "Item not found" });
-  }
+const deleteTask = async (req, res) => {
+  const { id } = req.params;
   try {
-    DATA_STORE.splice(ITEM_INDEX, 1); // Remove from memory, replace with DB delete logic
+    const result = await tasksService.deleteTask(id);
+    if (!result) {
+      return res.status(404).json({ message: "Task not found" });
+    }
     res.status(204).send();
-  } catch (error) {
-    res.status(500).json({ message: "Error deleting item", error });
+  } catch (err) {
+    res
+      .status(500)
+      .json({ message: "Error deleting task", error: err.message });
   }
+};
+
+module.exports = {
+  getAllTasks,
+  createTask,
+  getTaskById,
+  updateTask,
+  deleteTask,
 };

@@ -2,11 +2,12 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const promisePool = require("./config/db");
-const { createTable, seedDatabase } = require("./config/seed");
+const { createTable, seedDatabase, deleteAllTasks } = require("./config/seed");
 const notFoundMiddleware = require("./middlewares/notFound.middleware");
 const exceptionMiddleware = require("./middlewares/exception.middleware");
 dotenv.config();
 const app = express();
+const taskRoutes = require("../server/routes/task.routes");
 
 // TOP MIDDLEWARES
 app.use(express.json());
@@ -21,6 +22,7 @@ app.get("/", (req, res) => {
     <a href="/api/v1/tasks">Task API</a>
     `);
 });
+app.use("/api/v1/tasks", taskRoutes);
 
 // BOTTOM MIDDLEWARES
 app.use(notFoundMiddleware);
@@ -43,9 +45,12 @@ const start = async () => {
   try {
     // CONNECTION TO DATABSE AND SEEDER FN here...
     await promisePool.getConnection();
-    await createTable().then(() => {
-      seedDatabase();
-    });
+
+    // UNCOMMNET the codes below IF for FIRST time run..
+    // await deleteAllTasks();
+    // await createTable().then(() => {
+    //   seedDatabase();
+    // });
     app.listen(port, () => {
       console.log(`Server started at ${port} and connected to Mysql !!!`);
     });
