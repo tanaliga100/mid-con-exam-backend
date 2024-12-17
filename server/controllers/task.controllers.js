@@ -1,9 +1,18 @@
+const { NotFound, BadRequest } = require("../classes/error.classes");
 const tasksService = require("../services/task.services");
 
-const getAllTasks = async (req, res) => {
+const getAllTasks = async (req, res, next) => {
   try {
     const tasks = await tasksService.getAllTasks();
-    res.status(200).json(tasks);
+    if (tasks.length === 0) {
+      // utilize the class error for better error handling...
+      return next(new NotFound("No recods on the database"));
+    }
+    res.status(200).json({
+      msg: "ALL TASKS",
+      counts: tasks.length,
+      tasks,
+    });
   } catch (err) {
     res
       .status(500)
@@ -11,11 +20,19 @@ const getAllTasks = async (req, res) => {
   }
 };
 
-const createTask = async (req, res) => {
-  const { title, description } = req.body;
+const createTask = async (req, res, next) => {
+  const { title, description, status = "pending" } = req.body;
   try {
-    const newTask = await tasksService.createTask({ title, description });
-    res.status(201).json(newTask);
+    if (!title || !description) {
+      return next(new BadRequest("All fields are required"));
+    }
+    const newTask = await tasksService.createTask({ ...req.body });
+    console.log("new tasks", req.body);
+
+    res.status(201).json({
+      msg: "TASK CREATED ",
+      newTask,
+    });
   } catch (err) {
     res
       .status(500)
@@ -23,14 +40,19 @@ const createTask = async (req, res) => {
   }
 };
 
-const getTaskById = async (req, res) => {
+const getTaskById = async (req, res, next) => {
   const { id } = req.params;
   try {
     const task = await tasksService.getTaskById(id);
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return next(new NotFound(`No task with id : ${id}`));
+      // return res.status(404).json({ message: "Task not found" });
     }
-    res.status(200).json(task);
+
+    res.status(200).json({
+      msg: "SINGLE TASK",
+      task,
+    });
   } catch (err) {
     res
       .status(500)
@@ -38,18 +60,23 @@ const getTaskById = async (req, res) => {
   }
 };
 
-const updateTask = async (req, res) => {
+const updateTask = async (req, res, next) => {
   const { id } = req.params;
-  const { title, description } = req.body;
+  const { title, description, status } = req.body;
   try {
     const updatedTask = await tasksService.updateTask(id, {
       title,
       description,
+      status,
     });
     if (!updatedTask) {
-      return res.status(404).json({ message: "Task not found" });
+      return next(new NotFound(`No task with id : ${id}`));
+      // return res.status(404).json({ message: "Task not found" });
     }
-    res.status(200).json(updatedTask);
+    res.status(200).json({
+      msg: "TASK UPDATED",
+      updatedTask,
+    });
   } catch (err) {
     res
       .status(500)
@@ -57,14 +84,17 @@ const updateTask = async (req, res) => {
   }
 };
 
-const deleteTask = async (req, res) => {
+const deleteTask = async (req, res, next) => {
   const { id } = req.params;
   try {
     const result = await tasksService.deleteTask(id);
     if (!result) {
-      return res.status(404).json({ message: "Task not found" });
+      return next(new NotFound(`No task with id : ${id}`));
+      // return res.status(404).json({ message: "Task not found" });
     }
-    res.status(204).send();
+    res.status(202).json({
+      msg: "TASK DELETED",
+    });
   } catch (err) {
     res
       .status(500)

@@ -2,12 +2,12 @@
 const dotenv = require("dotenv");
 const express = require("express");
 const promisePool = require("./config/db");
-const { createTable, seedDatabase, deleteAllTasks } = require("./config/seed");
 const notFoundMiddleware = require("./middlewares/notFound.middleware");
 const exceptionMiddleware = require("./middlewares/exception.middleware");
 dotenv.config();
 const app = express();
-const taskRoutes = require("../server/routes/task.routes");
+const { createTable, seedDatabase, deleteAllTasks } = require("./config/seed");
+const taskRoutes = require("./routes/task.routes");
 
 // TOP MIDDLEWARES
 app.use(express.json());
@@ -22,21 +22,11 @@ app.get("/", (req, res) => {
     <a href="/api/v1/tasks">Task API</a>
     `);
 });
+
 app.use("/api/v1/tasks", taskRoutes);
 
 // BOTTOM MIDDLEWARES
 app.use(notFoundMiddleware);
-// app.use((err, req, res, next) => {
-//   let customError = {
-//     statusCode: err.statusCode || 500,
-//     msg: err.message || "Something went wrong",
-//   };
-//   // MASSAGE ERROR HERE...
-
-//   res.status(customError.statusCode).json({
-//     ERROR: customError.msg,
-//   });
-// });
 app.use(exceptionMiddleware);
 
 // SERVER INSTANCE
@@ -59,4 +49,5 @@ const start = async () => {
   }
 };
 start();
+
 console.log(process.env.NODE_ENV);

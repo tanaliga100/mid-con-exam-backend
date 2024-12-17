@@ -53,11 +53,10 @@ exports.seedDatabase = async () => {
         ]);
       }
 
-      console.log("Database seeded successfully!");
+      console.log("\x1b[33m%s\x1b[0m", "Database seeded successfully.....");
     } else {
       console.log("Data already exists. Skipping seed.");
     }
-    console.log("\x1b[33m%s\x1b[0m", "Database seeded successfully.....");
   } catch (error) {
     console.error("Error seeding the database:", error);
   }

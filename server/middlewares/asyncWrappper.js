@@ -8,5 +8,4 @@ const asyncWrapper = (fn) => {
   };
 };
 module.exports = asyncWrapper;
-
-// di konapo ginamit tong wrapper. I choose the mnaula try catch instead
+// di konapo ginamit tong wrapper. I choose the manual try catch instead

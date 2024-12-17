@@ -9,7 +9,8 @@ router.get("/:id", tasksController.getTaskById);
 router.put("/:id", tasksController.updateTask);
 router.delete("/:id", tasksController.deleteTask);
 
-module.exports = router;
+const taskRoutes = router;
+module.exports = taskRoutes;
 
 // ...MODE ONE...
 // router.get("/", function (req, res) {
