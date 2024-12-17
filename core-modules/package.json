@@ -1,0 +1,13 @@
+{
+  "name": "core-modules",
+  "version": "1.0.0",
+  "main": "fs.js",
+  "scripts": {
+    "start": "node --watch app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
