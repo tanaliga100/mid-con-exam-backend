@@ -1,6 +1,7 @@
 // IMPORTS
 const dotenv = require("dotenv");
 const express = require("express");
+const promisePool = require("./config/db");
 dotenv.config();
 const app = express();
 
@@ -12,9 +13,6 @@ app.use(express.static("./public"));
 app.get("/", (req, res) => {
   res.send("Node_Express Server Alive 🛩️");
 });
-
-app.use("/api/v1/auth", () => {});
-app.use("/api/v1/users", () => {});
 
 // BOTTOM MIDDLEWARES
 app.use((req, res, next) => {
@@ -39,12 +37,14 @@ app.use((err, req, res, next) => {
 const port = process.env.PORT || 5000;
 const start = async () => {
   try {
-    await function () {};
+    // SEEDER
+
+    // await promisePool.getConnection();
     app.listen(port, () => {
-      console.log(`Server started at ${port} and connected to DB !!`);
+      console.log(`Server started at ${port} and connected to Mysql !!!`);
     });
   } catch (error) {
-    console.log(error);
+    console.log("CONFIG_ERROR", error);
   }
 };
 start();
